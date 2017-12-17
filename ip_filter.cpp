@@ -30,6 +30,28 @@ std::vector<std::string> split(const std::string &str, char d)
     return r;
 }
 
+void ip_print(std::ostream &stream,
+              std::vector<std::vector<std::string>> ip_pool,
+              bool filter(const std::vector<std::string> ))
+		{
+		    for(auto ip : ip_pool)
+			{
+		         auto not_first=0;
+			            if(filter(ip))
+			            {
+			            for(auto ip_part : ip)
+			            {
+			                if (not_first++)
+			                {
+			                    stream << ".";
+			                }
+			                stream << ip_part;
+			            }
+			            stream << std::endl;
+					}
+		        }
+		}
+
 int main(int argc, char const *argv[])
 {
     try
@@ -43,7 +65,6 @@ int main(int argc, char const *argv[])
         }
 
         //reverse lexicographically sort
-
         std::sort(ip_pool.begin(),ip_pool.end(),[](std::vector<std::string> a,std::vector<std::string> b){
             auto i = 0u;
             auto s=a.size();
@@ -53,78 +74,25 @@ int main(int argc, char const *argv[])
             if(i==s){
                 --i;
             }
-//            std::cout << a.at(0);std::cout << b.at(0);std::cout << std::endl;
             return (stoi(a.at(i)) > stoi(b.at(i)));
         });
-
-        for(auto ip : ip_pool)
-        {
-            auto not_first=0;
-            for(auto ip_part : ip)
-            {
-                if (not_first++)
-                {
-                    std::cout << ".";
-                }
-                std::cout << ip_part;
-            }
-            std::cout << std::endl;
-        }
-
+        ip_print(std::cout,ip_pool,[](std::vector<std::string> ){return true;});
 
         // filter by first byte and output
-        // ip = filter(1)
-        for(auto ip : ip_pool)
-        {
-			if(stoi(ip.at(0)) == 1){
-            auto not_first=0;
-            for(auto ip_part : ip)
-            {
-                if (not_first++)
-                {
-                    std::cout << ".";
-                }
-                std::cout << ip_part;
-            }
-            std::cout << std::endl;
-		}
-        }
+        //ip = filter(1)
+        ip_print(std::cout,ip_pool,[](std::vector<std::string> a){return std::stoi(a.at(0)) == 1;});
 
         // filter by first and second bytes and output
         // ip = filter(46, 70)
-        for(auto ip : ip_pool)
-        {
-			if(stoi(ip.at(0)) == 46 && stoi(ip.at(1)) == 70){
-            auto not_first=0;
-            for(auto ip_part : ip)
-            {
-                if (not_first++)
-                {
-                    std::cout << ".";
-                }
-                std::cout << ip_part;
-            }
-            std::cout << std::endl;
-		}
-        }
+        ip_print(std::cout,ip_pool,[](std::vector<std::string> a){return std::stoi(a.at(0)) == 46 &&
+			                                                             std::stoi(a.at(1)) == 70;});
 
         // filter by any byte and output
         // ip = filter(46)
-        for(auto ip : ip_pool)
-        {
-			if(stoi(ip.at(0)) == 46 || stoi(ip.at(1)) == 46 || stoi(ip.at(2)) == 46 || stoi(ip.at(3)) == 46){
-            auto not_first=0;
-            for(auto ip_part : ip)
-            {
-                if (not_first++)
-                {
-                    std::cout << ".";
-                }
-                std::cout << ip_part;
-            }
-            std::cout << std::endl;
-		}
-        }
+        ip_print(std::cout,ip_pool,[](std::vector<std::string> ip){return std::stoi(ip.at(0)) == 46 ||
+			                                                              std::stoi(ip.at(1)) == 46 ||
+			                                                               std::stoi(ip.at(2)) == 46 ||
+			                                                              std::stoi(ip.at(3)) == 46;});
     }
     catch(const std::exception &e)
     {
