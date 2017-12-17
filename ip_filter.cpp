@@ -31,26 +31,26 @@ std::vector<std::string> split(const std::string &str, char d)
 }
 
 void ip_print(std::ostream &stream,
-              std::vector<std::vector<std::string>> ip_pool,
+              const std::vector<std::vector<std::string>> &ip_pool,
               bool filter(const std::vector<std::string> ))
-		{
-		    for(auto ip : ip_pool)
-			{
-		         auto not_first=0;
-			            if(filter(ip))
-			            {
-			            for(auto ip_part : ip)
-			            {
-			                if (not_first++)
-			                {
-			                    stream << ".";
-			                }
-			                stream << ip_part;
-			            }
-			            stream << std::endl;
-					}
-		        }
-		}
+{
+    for(auto ip : ip_pool)
+    {
+        auto not_first=0;
+        if(filter(ip))
+        {
+            for(auto ip_part : ip)
+            {
+                if (not_first++)
+                {
+                    stream << ".";
+                }
+                stream << ip_part;
+            }
+            stream << std::endl;
+        }
+    }
+}
 
 int main(int argc, char const *argv[])
 {
