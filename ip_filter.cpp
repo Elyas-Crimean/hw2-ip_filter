@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <functional>
 
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
@@ -32,19 +33,20 @@ std::vector<std::string> split(const std::string &str, char d)
 
 void ip_print(std::ostream &stream,
               const std::vector<std::vector<std::string>> &ip_pool,
-              bool filter(const std::vector<std::string> ))
+              std::function<bool (const std::vector<std::string> &a)> filter)
 {
     for(auto ip : ip_pool)
     {
-        auto not_first=0;
+        auto dot_skip=true;
         if(filter(ip))
         {
             for(auto ip_part : ip)
             {
-                if (not_first++)
-                {
-                    stream << ".";
-                }
+                if (dot_skip) {
+					dot_skip = false;
+                }else{
+					stream << ".";
+				}
                 stream << ip_part;
             }
             stream << std::endl;
@@ -76,20 +78,20 @@ int main(int argc, char const *argv[])
             }
             return (stoi(a.at(i)) > stoi(b.at(i)));
         });
-        ip_print(std::cout,ip_pool,[](std::vector<std::string> ){return true;});
+        ip_print(std::cout,ip_pool,[](const std::vector<std::string>& ){return true;});
 
         // filter by first byte and output
         //ip = filter(1)
-        ip_print(std::cout,ip_pool,[](std::vector<std::string> a){return std::stoi(a.at(0)) == 1;});
+        ip_print(std::cout,ip_pool,[](const std::vector<std::string> &a){return std::stoi(a.at(0)) == 1;});
 
         // filter by first and second bytes and output
         // ip = filter(46, 70)
-        ip_print(std::cout,ip_pool,[](std::vector<std::string> a){return std::stoi(a.at(0)) == 46 &&
+        ip_print(std::cout,ip_pool,[](const std::vector<std::string> &a){return std::stoi(a.at(0)) == 46 &&
 			                                                             std::stoi(a.at(1)) == 70;});
 
         // filter by any byte and output
         // ip = filter(46)
-        ip_print(std::cout,ip_pool,[](std::vector<std::string> ip){return std::stoi(ip.at(0)) == 46 ||
+        ip_print(std::cout,ip_pool,[](const std::vector<std::string> &ip){return std::stoi(ip.at(0)) == 46 ||
 			                                                              std::stoi(ip.at(1)) == 46 ||
 			                                                               std::stoi(ip.at(2)) == 46 ||
 			                                                              std::stoi(ip.at(3)) == 46;});
