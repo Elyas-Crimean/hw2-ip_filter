@@ -54,6 +54,21 @@ void ip_print(std::ostream &stream,
     }
 }
 
+bool filter_begin(const std::vector<std::string> &ip, int b1)
+{
+    return std::stoi(ip.at(0)) == b1;
+}
+
+bool filter_begin(const std::vector<std::string> &ip, int b1, int b2)
+{
+    return std::stoi(ip.at(0)) == b1 && std::stoi(ip.at(1)) == b2;
+}
+
+bool filter_any(const std::vector<std::string> &ip, int b)
+{
+    return any_of(ip.begin(),ip.end(),[b](std::string ip_part){return std::stoi(ip_part) == b;}) ;
+}
+                                                                         
 int main(int argc, char const *argv[])
 {
     try
@@ -70,7 +85,7 @@ int main(int argc, char const *argv[])
         std::sort(ip_pool.begin(),ip_pool.end(),[](std::vector<std::string> a,std::vector<std::string> b){
             auto i = 0u;
             auto s=a.size();
-            while (i<s && (a.at(i).compare(b.at(i)) == 0)) {
+            while (i<s && (a.at(i) == b.at(i))) {
                 ++i;
             }
             if(i==s){
@@ -82,19 +97,15 @@ int main(int argc, char const *argv[])
 
         // filter by first byte and output
         //ip = filter(1)
-        ip_print(std::cout,ip_pool,[](const std::vector<std::string> &a){return std::stoi(a.at(0)) == 1;});
+        ip_print(std::cout,ip_pool,[](const std::vector<std::string> &a){return filter_begin(a, 1);});
 
         // filter by first and second bytes and output
         // ip = filter(46, 70)
-        ip_print(std::cout,ip_pool,[](const std::vector<std::string> &a){return std::stoi(a.at(0)) == 46 &&
-			                                                             std::stoi(a.at(1)) == 70;});
+        ip_print(std::cout,ip_pool,[](const std::vector<std::string> &a){return filter_begin(a, 46, 70);});
 
         // filter by any byte and output
         // ip = filter(46)
-        ip_print(std::cout,ip_pool,[](const std::vector<std::string> &ip){return std::stoi(ip.at(0)) == 46 ||
-			                                                              std::stoi(ip.at(1)) == 46 ||
-			                                                               std::stoi(ip.at(2)) == 46 ||
-			                                                              std::stoi(ip.at(3)) == 46;});
+        ip_print(std::cout,ip_pool,[](const std::vector<std::string> &ip){return filter_any(ip,46);});
     }
     catch(const std::exception &e)
     {
