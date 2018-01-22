@@ -23,6 +23,9 @@ struct Ip4
                              std::stoi(ip_s.at(3)));
     }
     std::tuple<uint8_t,uint8_t,uint8_t,uint8_t> ip;
+    bool operator>(const Ip4& other) const {
+        return ip > other.ip;
+    }
 };
 
 std::vector<std::string> split(const std::string &str, char d)
@@ -98,7 +101,7 @@ int main(int argc, char const *argv[])
         }
 
         //reverse lexicographically sort
-        std::sort(ip_pool.begin(),ip_pool.end(),[](Ip4 a,Ip4 b){ return a.ip > b.ip;});
+        std::sort(ip_pool.begin(),ip_pool.end(),std::greater<Ip4>());
         ip_print(std::cout,ip_pool,[](const Ip4& ){return true;});
 
         // filter by first byte and output
