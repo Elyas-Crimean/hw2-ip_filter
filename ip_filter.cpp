@@ -7,6 +7,7 @@
 #include <functional>
 #include <cstdint>
 #include <tuple>
+#include <initializer_list>
 // ("",  '.') -> [""]
 // ("11", '.') -> ["11"]
 // ("..", '.') -> ["", "", ""]
@@ -71,7 +72,7 @@ void ip_print(std::ostream &stream,
         }
     }
 }
-
+/*
 bool filter_begin(const Ip4 &ip, int b1)
 {
     return std::get<0>(ip.ip) == b1;
@@ -81,6 +82,25 @@ bool filter_begin(const Ip4 &ip, int b1, int b2)
 {
     return std::get<0>(ip.ip) == b1 && std::get<1>(ip.ip) == b2;
 }
+*/
+template<int n>
+bool filter_helper(const Ip4& ip, int byte)
+{
+    return std::get<n>(ip.ip) == byte;
+}
+
+template<typename ...Args>
+bool filter_begin(const Ip4 &ip, int b1, Args... bytes)
+{
+    bool result = std::get<0>(ip.ip) == b1;
+    constexpr int N = sizeof...(Args);
+    if(result && N == 1) {
+        int bs[] = {bytes...};
+        result = filter_helper<N>(ip, bs[0]);
+    }
+    return result;
+}
+
 
 bool filter_any(const Ip4 &ip, int b)
 {
